@@ -1,29 +1,35 @@
+import ImgBlock from './ImgBlock'
+
 const sketch = (p) => {
-    let img, loc, sorted, index = 1;
+    let img, loc, array, index = 1;
     const path = './puppy.jpeg'
 
     p.preload = () => {
         img = p.loadImage(path)
-        sorted = p.loadImage(path)
     }
 
     p.setup = () => {
-        p.createCanvas(img.width * 2,img.height)
-        sorted.loadPixels()
-        sorted.updatePixels()
+        p.createCanvas(img.width * 2,img.height);
+        p.pixelDensity(1);
     } 
 
     p.draw = () => {
-        p.background(255)
-        if (index < sorted.pixels.length) {
-            iterateMergeSort
-            sorted.updatePixels()
-            index *= 2;
+        p.background(255);
+        p.image(img, img.width,0);
+    }
+
+    p.partition = (img, amountX, amountY) => {
+        let array = [], index, newBlock = p.createImage(img.width/amountX, img.height/amountY);
+        for (let x = 0; x < img.width; x++) {
+            for (let y = 0; y < img.height; y++) {
+                index = (x + y * img.width) * 4;
+                
+            }
         }
-        p.image(img, 0,0)
-        p.image(sorted, img.width, p.random(0,100))
     }
 }
+
+
 
 const iterateMergeSort = (index, array, measure) => {
     let result = [], left, right;
