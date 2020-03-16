@@ -1,9 +1,8 @@
-import ImgBlock from './ImgBlock'
-
 const sketch = (p) => {
-    let img, loc, array = [], index = 1, amountX = 20, amountY = 10;
+    let img, loc, array = [], index = 1, amountX = 50, amountY = 50;
+    let i = 0;
     let blockWidth, blockHeight;
-    const path = './puppy.jpeg'
+    const path = './puppy.jpg'
 
     p.swapPixels = (pixelArray,i,j) => {
         swap(pixelArray[i], pixelArray[j])
@@ -23,14 +22,25 @@ const sketch = (p) => {
         array = p.partition(img);
         p.background(255);
         p.image(img, img.width, 0);
-        console.log(array, blockHeight, blockWidth, img.width, img.height)
         shuffle(array)
     } 
 
     p.draw = () => {
-        for (let j = 0; j < amountX; j++) {
-            for (let i = 0; i < amountY; i++) {
-                p.image(array[i + j * amountX]["img"], i * blockWidth, j * blockHeight)
+        if (i < array.length) {
+            for (let j = 0; j < array.length - i - 1; j++) {
+                if (array[j + 1].index < array[j].index) {
+                    let t = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = t;
+                }
+            }
+            i++;
+        } else {
+            p.noLoop()
+        }
+        for (let i = 0; i < amountX; i++) {
+            for (let j = 0; j < amountY; j++) {
+                p.image(array[i + j * amountX].img, i * blockWidth, j * blockHeight)
             }
         }
     }
@@ -38,8 +48,8 @@ const sketch = (p) => {
     p.partition = (img) => {
         let array = []
         let newBlock
-        for (let j = 0; j < amountX; j++) {
-            for (let i = 0; i < amountY; i++) {
+        for (let j = 0; j < amountY; j++) {
+            for (let i = 0; i < amountX; i++) {
                 newBlock = img.get(i * blockWidth, j * blockHeight, blockWidth, blockHeight)
                 array.push({img: newBlock, index: i + j * amountX})
             }
@@ -48,10 +58,10 @@ const sketch = (p) => {
     }
 }
 
-const swap = (i, j) => {
-    let t = i;
-    i = j;
-    j = t;
+const swap = (array, i, j) => {
+    let t = array[i];
+    array[i] = array[j];
+    array[j] = array[t];
 }
 
 const iterateMergeSort = (index, array, measure) => {
