@@ -1,35 +1,58 @@
 import ImgBlock from './ImgBlock'
 
 const sketch = (p) => {
-    let img, loc, array, index = 1;
+    let img, loc, array = [], index = 1, amountX = 20, amountY = 10;
+    let blockWidth, blockHeight;
     const path = './puppy.jpeg'
+
+    p.swapPixels = (pixelArray,i,j) => {
+        swap(pixelArray[i], pixelArray[j])
+        swap(pixelArray[i + 1], pixelArray[j + 1])
+        swap(pixelArray[i + 1], pixelArray[j + 1])
+    } 
 
     p.preload = () => {
         img = p.loadImage(path)
     }
 
     p.setup = () => {
+        img.resize(img.width - img.width % amountX, img.height - img.height % amountY)
+        blockWidth = img.width / amountX
+        blockHeight = img.height / amountY
         p.createCanvas(img.width * 2,img.height);
-        p.pixelDensity(1);
+        array = p.partition(img);
+        p.background(255);
+        p.image(img, img.width, 0);
+        console.log(array, blockHeight, blockWidth, img.width, img.height)
+        shuffle(array)
     } 
 
     p.draw = () => {
-        p.background(255);
-        p.image(img, img.width,0);
-    }
-
-    p.partition = (img, amountX, amountY) => {
-        let array = [], index, newBlock = p.createImage(img.width/amountX, img.height/amountY);
-        for (let x = 0; x < img.width; x++) {
-            for (let y = 0; y < img.height; y++) {
-                index = (x + y * img.width) * 4;
-                
+        for (let j = 0; j < amountX; j++) {
+            for (let i = 0; i < amountY; i++) {
+                p.image(array[i + j * amountX]["img"], i * blockWidth, j * blockHeight)
             }
         }
     }
+
+    p.partition = (img) => {
+        let array = []
+        let newBlock
+        for (let j = 0; j < amountX; j++) {
+            for (let i = 0; i < amountY; i++) {
+                newBlock = img.get(i * blockWidth, j * blockHeight, blockWidth, blockHeight)
+                array.push({img: newBlock, index: i + j * amountX})
+            }
+        }
+        return array
+    }
 }
 
-
+const swap = (i, j) => {
+    let t = i;
+    i = j;
+    j = t;
+}
 
 const iterateMergeSort = (index, array, measure) => {
     let result = [], left, right;
@@ -61,7 +84,7 @@ const merge = (a, b, measure) => {
     return result
 }
 
-const randomize = (array) => {
+const shuffle = (array) => {
     let n = array.length, t, i;
     while (n) {
         i = Math.random() * n-- | 0; // 0 ≤ i < n
